@@ -7,11 +7,21 @@ import java.util.Objects;
 
 class Section {
     private final String sectionId;
+    private final Schedule schedule;
 
-    Section(String sectionId) {
+    Section(String sectionId, Schedule schedule) {
         notBlank(sectionId);
+        notNull(schedule);
         isTrue(isAlphanumeric(sectionId), "sectionId must be alphanumeric, was: " + sectionId);
         this.sectionId = sectionId;
+        this.schedule = schedule;
+    }
+
+    void checkForConflict(Section other) {
+        if (this.schedule.equals(other.schedule)) {
+            throw new ScheduleConflictException("current section " + this + " has same schedule as new section "
+                    + other + " at schedule " + schedule);
+        }
     }
 
     @Override

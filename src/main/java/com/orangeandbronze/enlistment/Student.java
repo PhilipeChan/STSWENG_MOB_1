@@ -1,11 +1,8 @@
 package com.orangeandbronze.enlistment;
 
-import static org.apache.commons.lang3.StringUtils.*;
-import static org.apache.commons.lang3.Validate.*;
+import java.util.*;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
+import static org.apache.commons.lang3.Validate.notNull;
 
 class Student {
 
@@ -15,17 +12,25 @@ class Student {
     Student(int studentNumber, Collection<Section> sections) {
         if (studentNumber < 0)
             throw new IllegalArgumentException("studentNumber should be non-negative, was: " + studentNumber);
-        if (sections == null)
-            throw new NullPointerException();
+        notNull(sections);
         this.studentNumber = studentNumber;
         this.sections.addAll(sections);
         this.sections.removeIf(Objects::isNull);
     }
 
-    void enlist(Section section) {
-        if (section == null)
-            throw new NullPointerException();
-        this.sections.add(section);
+    Student(int studentNumber) {
+        this(studentNumber, Collections.emptyList());
+    }
+
+    void enlist(Section newSection) {
+        notNull(newSection);
+        // loop through all current sections, check for same schedule
+        sections.forEach(currSection -> currSection.checkForConflict(newSection));
+        this.sections.add(newSection);
+    }
+
+    Collection<Section> getSections() {
+        return new ArrayList<>(sections);
     }
 
     @Override
